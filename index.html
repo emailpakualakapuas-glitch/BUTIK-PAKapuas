@@ -4,9 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Buku Tamu Elektronik - PA Kuala Kapuas Kelas IB</title>
+  
+  <!-- Favicon (Ikon di Tab Browser) -->
+  <link rel="icon" type="image/png" href="Logo.png">
+
   <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
     .container { max-width: 650px; background: white; margin: auto; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    
+    /* Style Tambahan untuk Logo */
+    .logo { display: block; margin: 0 auto 15px auto; max-width: 100px; height: auto; }
+
     h2 { text-align: center; color: #2E7D32; font-size: 24px; margin-bottom: 5px; }
     h3 { text-align: center; color: #555; font-size: 16px; margin-top: 0; margin-bottom: 25px;}
     label { font-weight: bold; display: block; margin-top: 15px; margin-bottom: 5px; color: #333;}
@@ -23,6 +31,9 @@
 </head>
 <body>
   <div class="container">
+    <!-- Gambar Logo -->
+    <img src="Logo.png" alt="Logo PA Kuala Kapuas" class="logo">
+
     <h2>BUKU TAMU ELEKTRONIK</h2>
     <h3>Pengadilan Agama Kuala Kapuas Kelas IB</h3>
     
@@ -139,8 +150,7 @@
         foto: fotoData.value
       };
 
-      // Kirim Data ke Google Apps Script API
-     // Kirim Data dengan mode 'no-cors' agar lolos dari blokir CORS browser
+      // Kirim Data dengan mode 'no-cors' agar lolos dari blokir CORS browser
       fetch(WEB_APP_URL, {
         method: 'POST',
         mode: 'no-cors',
