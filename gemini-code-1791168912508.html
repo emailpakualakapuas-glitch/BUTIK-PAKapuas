@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buku Tamu Elektronik - PA Kuala Kapuas Kelas IB</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+    .container { max-width: 650px; background: white; margin: auto; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    h2 { text-align: center; color: #2E7D32; font-size: 24px; margin-bottom: 5px; }
+    h3 { text-align: center; color: #555; font-size: 16px; margin-top: 0; margin-bottom: 25px;}
+    label { font-weight: bold; display: block; margin-top: 15px; margin-bottom: 5px; color: #333;}
+    input[type="text"], input[type="tel"], textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit;}
+    
+    .camera-box { text-align: center; background: #fafafa; padding: 20px; border-radius: 6px; border: 2px dashed #2E7D32; margin-top: 20px; }
+    video, canvas, #previewImg { width: 100%; max-width: 450px; height: auto; display: block; margin: 10px auto; border-radius: 6px; border: 1px solid #ccc; background: #000; }
+    
+    .btn { width: 100%; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 15px;}
+    .btn-camera { background-color: #0288D1; color: white; width: auto; display: inline-block; padding: 10px 20px; margin: 5px;}
+    .btn-submit { background-color: #2E7D32; color: white; margin-top: 25px; font-size: 18px; }
+    .btn-submit:disabled { background-color: #9E9E9E; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>BUKU TAMU ELEKTRONIK</h2>
+    <h3>Pengadilan Agama Kuala Kapuas Kelas IB</h3>
+    
+    <form id="tamuForm">
+      <label>Nama Pengunjung</label>
+      <input type="text" id="nama" placeholder="Masukkan nama lengkap" required>
+
+      <label>Pekerjaan / Instansi</label>
+      <input type="text" id="instansi" placeholder="Contoh: Wiraswasta / Dinas Pendidikan" required>
+
+      <label>Alamat Lengkap</label>
+      <textarea id="alamat" rows="3" placeholder="Masukkan alamat lengkap" required></textarea>
+
+      <label>Nomor Telp/WA</label>
+      <input type="tel" id="telepon" placeholder="Contoh: 08123456789" required>
+
+      <label>Keperluan</label>
+      <textarea id="keperluan" rows="3" placeholder="Tujuan bertamu / Pihak yang ingin ditemui" required></textarea>
+
+      <!-- Kamera Live Webcam PC -->
+      <div class="camera-box">
+         <label style="margin-top:0;">Foto Pengunjung (Live Webcam)</label>
+         
+         <video id="video" autoplay playsinline></video>
+         <canvas id="canvas" style="display:none;"></canvas>
+         <img id="previewImg" style="display:none;" alt="Preview Foto">
+         
+         <div>
+           <button type="button" class="btn btn-camera" id="btnSnap">📷 Ambil Foto</button>
+           <button type="button" class="btn btn-camera" id="btnUlang" style="display:none; background-color:#d32f2f;">🔄 Ulangi Foto</button>
+         </div>
+
+         <input type="hidden" id="fotoData">
+      </div>
+
+      <button type="button" class="btn btn-submit" id="btnSimpan">SIMPAN DATA TAMU</button>
+    </form>
+  </div>
+
+  <script>
+    // ==========================================
+    // MASUKKAN URL WEB APP APPS SCRIPT ANDA DI SINI
+    // ==========================================
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzKW_VDzRYIsyPDEQYHPMtSPmSOv75_xbpiyiOJPF2gTVQnIjPtcHDNesN2dldUL-DMKA/exec";
+
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const previewImg = document.getElementById('previewImg');
+    const btnSnap = document.getElementById('btnSnap');
+    const btnUlang = document.getElementById('btnUlang');
+    const fotoData = document.getElementById('fotoData');
+
+    // 1. Jalankan Kamera Webcam PC
+    navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } })
+      .then(function(stream) {
+        video.srcObject = stream;
+      })
+      .catch(function(err) {
+        alert("Gagal mengakses webcam PC: " + err.message + "\nPastikan kamera PC terhubung dan diizinkan!");
+      });
+
+    // 2. Jepret Foto dari Kamera Live
+    btnSnap.addEventListener("click", function() {
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      fotoData.value = canvas.toDataURL('image/png');
+      previewImg.src = fotoData.value;
+      
+      previewImg.style.display = 'block';
+      video.style.display = 'none';
+      btnSnap.style.display = 'none';
+      btnUlang.style.display = 'inline-block';
+    });
+
+    // 3. Ulangi Foto
+    btnUlang.addEventListener("click", function() {
+      fotoData.value = "";
+      previewImg.style.display = 'none';
+      video.style.display = 'block';
+      btnSnap.style.display = 'inline-block';
+      btnUlang.style.display = 'none';
+    });
+
+    // 4. Kirim Data ke Google Apps Script API
+    document.getElementById('btnSimpan').addEventListener('click', function() {
+      const nama = document.getElementById('nama').value;
+      const instansi = document.getElementById('instansi').value;
+      const alamat = document.getElementById('alamat').value;
+      const telepon = document.getElementById('telepon').value;
+      const keperluan = document.getElementById('keperluan').value;
+
+      if(!nama || !keperluan) {
+          alert("Harap isi Nama dan Keperluan bertamu!");
+          return;
+      }
+      if(!fotoData.value) {
+          alert("Harap ambil foto pengunjung terlebih dahulu!");
+          return;
+      }
+
+      const btn = document.getElementById('btnSimpan');
+      btn.innerText = 'MENGIRIM DATA...';
+      btn.disabled = true;
+
+      const payload = {
+        nama: nama,
+        instansi: instansi,
+        alamat: alamat,
+        telepon: telepon,
+        keperluan: keperluan,
+        foto: fotoData.value
+      };
+
+      fetch(WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if(data.status === "success") {
+          alert("✓ Data Tamu Berhasil Disimpan ke Google Spreadsheet & Drive!");
+          document.getElementById('tamuForm').reset();
+          btnUlang.click();
+        } else {
+          alert("Gagal menyimpan data: " + data.message);
+        }
+        btn.innerText = 'SIMPAN DATA TAMU';
+        btn.disabled = false;
+      })
+      .catch(error => {
+        alert("Terjadi kesalahan koneksi: " + error.message);
+        btn.innerText = 'SIMPAN DATA TAMU';
+        btn.disabled = false;
+      });
+    });
+  </script>
+</body>
+</html>
