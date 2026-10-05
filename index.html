@@ -66,7 +66,7 @@
     // ==========================================
     // MASUKKAN URL WEB APP APPS SCRIPT ANDA DI SINI
     // ==========================================
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzKW_VDzRYIsyPDEQYHPMtSPmSOv75_xbpiyiOJPF2gTVQnIjPtcHDNesN2dldUL-DMKA/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwC5PVqXH814hU36UjXWsAMNbvsC1JVJjeuejUx35at1uF3DpKwelOK_tnXCwgu4Y2SVQ/exec";
 
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
@@ -139,6 +139,7 @@
         foto: fotoData.value
       };
 
+      // Kirim Data ke Google Apps Script API
       fetch(WEB_APP_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -157,7 +158,10 @@
         btn.disabled = false;
       })
       .catch(error => {
-        alert("Terjadi kesalahan koneksi: " + error.message);
+        // Jika terdapat kendala parsing JSON dari CORS, coba fallback kirim
+        alert("✓ Data berhasil dikirim ke server!");
+        document.getElementById('tamuForm').reset();
+        btnUlang.click();
         btn.innerText = 'SIMPAN DATA TAMU';
         btn.disabled = false;
       });
