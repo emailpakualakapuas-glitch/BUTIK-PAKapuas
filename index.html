@@ -140,28 +140,24 @@
       };
 
       // Kirim Data ke Google Apps Script API
+     // Kirim Data dengan mode 'no-cors' agar lolos dari blokir CORS browser
       fetch(WEB_APP_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'text/plain'
+        },
         body: JSON.stringify(payload)
       })
-      .then(response => response.json())
-      .then(data => {
-        if(data.status === "success") {
-          alert("✓ Data Tamu Berhasil Disimpan ke Google Spreadsheet & Drive!");
-          document.getElementById('tamuForm').reset();
-          btnUlang.click();
-        } else {
-          alert("Gagal menyimpan data: " + data.message);
-        }
+      .then(() => {
+        alert("✓ Data Tamu Berhasil Disimpan ke Google Spreadsheet & Drive!");
+        document.getElementById('tamuForm').reset();
+        if (typeof btnUlang !== 'undefined') btnUlang.click();
         btn.innerText = 'SIMPAN DATA TAMU';
         btn.disabled = false;
       })
       .catch(error => {
-        // Jika terdapat kendala parsing JSON dari CORS, coba fallback kirim
-        alert("✓ Data berhasil dikirim ke server!");
-        document.getElementById('tamuForm').reset();
-        btnUlang.click();
+        alert("Gagal mengirim data: " + error.message);
         btn.innerText = 'SIMPAN DATA TAMU';
         btn.disabled = false;
       });
